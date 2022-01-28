@@ -8,9 +8,11 @@ import isUrl from 'is-url'
 import path from 'path'
 import { URL } from 'url'
 import * as utils from './utils'
+import sharp from 'sharp'
 
 const ExtendedOctokit = Octokit.plugin(retry, throttling)
 const readFile = Promise.promisify(fs.readFile)
+const imageProcessing = sharp();
 
 const RAW_GITHUB_URL = 'https://raw.githubusercontent.com'
 
@@ -99,32 +101,39 @@ class GitHubStorage extends BaseStorage {
 
     save(file, targetDir) {
         const dir = targetDir || this.getTargetDir()
+        const out = file.path + ".webp";
 
-        return Promise.all([
-            this.getUniqueFileName(file, dir),
-            readFile(file.path, 'base64') // GitHub API requires content to use base64 encoding
-        ])
-            .then(([filename, data]) => {
-                return this.client.repos.createOrUpdateFileContents({
-                    owner: this.owner,
-                    repo: this.repo,
-                    branch: this.branch,
-                    message: `Create ${filename}`,
-                    path: this.getFilepath(filename),
-                    content: data
+        return sharp(file.path)
+            .toFile(file.path + ".webp").then((info) =>{
+                console.log("Info", info)
+            Promise.all([
+                this.getUniqueFileName(out, dir),
+                readFile(out, 'base64') // GitHub API requires content to use base64 encoding
+            ])
+                .then(([filename, data]) => {
+                    console.log("ajajam", data)
+                    return this.client.repos.createOrUpdateFileContents({
+                        owner: this.owner,
+                        repo: this.repo,
+                        branch: this.branch,
+                        message: `Create ${filename}`,
+                        path: this.getFilepath(filename),
+                        content: data
+                    })
                 })
-            })
-            .then(res => {
-                const { path } = res.data.content
-                if (this.useRelativeUrls) {
-                    return `/${path}`
-                }
+                .then(res => {
+                    const { path } = res.data.content
+                    if (this.useRelativeUrls) {
+                        return `/${path}`
+                    }
 
-                return this.getUrl(path)
-            })
-            .catch(e => {
-                // Stop failed attempts from preventing retries
-            })
+                    return this.getUrl(path)
+                })
+                .catch(e => {
+                    // Stop failed attempts from preventing retries
+                    console.error(e)
+                })
+        })
     }
 
     serve() {
