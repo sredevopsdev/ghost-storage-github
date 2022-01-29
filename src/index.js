@@ -12,7 +12,6 @@ import sharp from 'sharp'
 
 const ExtendedOctokit = Octokit.plugin(retry, throttling)
 const readFile = Promise.promisify(fs.readFile)
-const imageProcessing = sharp();
 
 const RAW_GITHUB_URL = 'https://raw.githubusercontent.com'
 
