@@ -128,7 +128,6 @@ class GitHubStorage extends BaseStorage {
             })
             .catch(e => {
                 // Stop failed attempts from preventing retries
-                console.error(e)
             })
     }
 
