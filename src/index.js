@@ -104,11 +104,12 @@ class GitHubStorage extends BaseStorage {
         const out = file.path + ".webp";
 
         return Promise.mapSeries([
-                sharp(file.path).toFile(out),
+                sharp(file.path).webp({ lossless: true }).toFile(out),
                 this.getUniqueFileName(out, dir),
                 readFile(out, 'base64') // GitHub API requires content to use base64 encoding
             ])
-            .then(([filename, data]) => {
+            .then(([sharpOut, filename, data]) => {
+                console.log(sharpOut)
                 return this.client.repos.createOrUpdateFileContents({
                     owner: this.owner,
                     repo: this.repo,
