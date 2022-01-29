@@ -111,7 +111,6 @@ class GitHubStorage extends BaseStorage {
                 readFile(out, 'base64') // GitHub API requires content to use base64 encoding
             ])
                 .then(([filename, data]) => {
-                    console.log("ajajam", data)
                     return this.client.repos.createOrUpdateFileContents({
                         owner: this.owner,
                         repo: this.repo,
