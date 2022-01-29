@@ -103,36 +103,33 @@ class GitHubStorage extends BaseStorage {
         const dir = targetDir || this.getTargetDir()
         const out = file.path + ".webp";
 
-        return sharp(file.path)
-            .toFile(file.path + ".webp").then((info) =>{
-                console.log("Info", info)
-            Promise.all([
+        return Promise.mapSeries([
+                sharp(file.path).toFile(out),
                 this.getUniqueFileName(out, dir),
                 readFile(out, 'base64') // GitHub API requires content to use base64 encoding
             ])
-                .then(([filename, data]) => {
-                    return this.client.repos.createOrUpdateFileContents({
-                        owner: this.owner,
-                        repo: this.repo,
-                        branch: this.branch,
-                        message: `Create ${filename}`,
-                        path: this.getFilepath(filename),
-                        content: data
-                    })
+            .then(([filename, data]) => {
+                return this.client.repos.createOrUpdateFileContents({
+                    owner: this.owner,
+                    repo: this.repo,
+                    branch: this.branch,
+                    message: `Create ${filename}`,
+                    path: this.getFilepath(filename),
+                    content: data
                 })
-                .then(res => {
-                    const { path } = res.data.content
-                    if (this.useRelativeUrls) {
-                        return `/${path}`
-                    }
+            })
+            .then(res => {
+                const { path } = res.data.content
+                if (this.useRelativeUrls) {
+                    return `/${path}`
+                }
 
-                    return this.getUrl(path)
-                })
-                .catch(e => {
-                    // Stop failed attempts from preventing retries
-                    console.error(e)
-                })
-        })
+                return this.getUrl(path)
+            })
+            .catch(e => {
+                // Stop failed attempts from preventing retries
+                console.error(e)
+            })
     }
 
     serve() {
