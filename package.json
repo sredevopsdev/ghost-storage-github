@@ -1,14 +1,14 @@
 {
-  "name": "ghost-storage-github",
-  "version": "2.0.1",
+  "name": "ghost-storage-github-fork",
+  "version": "2.2.0",
   "description": "GitHub storage adapter for Ghost",
-  "homepage": "https://github.com/ifvictr/ghost-storage-github#readme",
+  "homepage": "https://github.com/sredevopsdev/ghost-storage-github#readme",
   "bugs": {
-    "url": "https://github.com/ifvictr/ghost-storage-github/issues"
+    "url": "https://github.com/sredevopsdev/ghost-storage-github/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ifvictr/ghost-storage-github.git"
+    "url": "https://github.com/sredevopsdev/ghost-storage-github.git"
   },
   "license": "MIT",
   "author": {
@@ -31,9 +31,9 @@
     "@octokit/plugin-throttling": "^3.4.1",
     "@octokit/rest": "^18.5.2",
     "bluebird": "^3.7.2",
-    "ghost-storage-base": "^0.0.5",
+    "ghost-storage-base": "^1.0.0",
     "is-url": "^1.2.4",
-    "sharp": "^0.29.3"
+    "sharp": "^0.32.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.14",
